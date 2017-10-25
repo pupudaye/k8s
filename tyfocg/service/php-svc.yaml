@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-php
+  labels:
+    app: app-php
+spec:
+  ports:
+    - port: 9000
+  selector:
+    app: app-php
+    tier: php
+  #type: NodePort
+  #clusterIP: None
+

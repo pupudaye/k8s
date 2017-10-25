@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-tomcat-config-stg
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    # FIXME: use the right IP
+    server: 192.168.91.210
+    path: "/data/stg/tomcat"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-tomcat-www-stg
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    # FIXME: use the right IP
+    server: 192.168.91.210
+    path: "/data/stg/tomcat-www"

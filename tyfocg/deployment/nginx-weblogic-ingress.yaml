@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-weblogic-ingress
+spec:
+  rules:
+  - host: local-m.tyfocg.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: app-nginx
+          servicePort: 80
+  - host: local-platform.tyfocg.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: app-tomcat
+          servicePort: 80

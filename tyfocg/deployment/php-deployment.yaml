@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: php-config-pv-claim
+  labels:
+    app: php
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: php-www-pv-claim
+  labels:
+    app: php
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: app-php
+  labels:
+    app: app-php
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app-php
+        tier: php
+    spec:
+      containers:
+      - image: php:5.6-fpm
+        name: php
+        ports:
+        - containerPort: 9000
+          name: php
+        volumeMounts:
+          - name: php-config-persistent-storage
+            mountPath: /usr/local/etc
+          - name: php-www-persistent-storage
+            mountPath: /usr/share/nginx
+      volumes:
+        - name: php-config-persistent-storage
+          persistentVolumeClaim:
+             claimName: php-config-pv-claim
+        - name: php-www-persistent-storage
+          persistentVolumeClaim:
+             claimName: php-www-pv-claim
+
+

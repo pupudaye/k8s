@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-config-pv-claim
+  labels:
+    app: nginx-config
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-www-pv-claim
+  labels:
+    app: nginx-www
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: app-nginx
+  labels:
+    app: app-nginx
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app-nginx
+        tier: nginx
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        ports:
+        - containerPort: 8080
+          name: nginx
+        volumeMounts:
+          - name: nginx-config-persistent-storage
+            mountPath: /etc/nginx
+          - name: nginx-www-persistent-storage
+            mountPath: /usr/share/nginx
+      volumes:
+        - name: nginx-config-persistent-storage
+          persistentVolumeClaim:
+             claimName: nginx-config-pv-claim
+        - name: nginx-www-persistent-storage
+          persistentVolumeClaim:
+             claimName: nginx-www-pv-claim
+

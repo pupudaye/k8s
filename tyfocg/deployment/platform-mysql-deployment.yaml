@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-mysql-pv-claim
+  labels:
+    app: platform-mysql
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-mysql
+  labels:
+    app: platform-mysql
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: platform-mysql
+        tier: mysql
+    spec:
+      containers:
+      - image: mysql:5.7.18
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-pass
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: platform-mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: platform-mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: platform-mysql-pv-claim

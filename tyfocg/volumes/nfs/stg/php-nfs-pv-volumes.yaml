@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-php-config-stg
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    # FIXME: use the right IP
+    server: 192.168.91.210
+    path: "/data/stg/php"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-php-www-stg
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    # FIXME: use the right IP
+    server: 192.168.91.210
+    path: "/data/stg/nginx-www"

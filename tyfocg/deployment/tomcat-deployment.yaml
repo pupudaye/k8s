@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tomcat-config-pv-claim
+  labels:
+    app: tomcat
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tomcat-www-pv-claim
+  labels:
+    app: tomcat-www
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: app-tomcat
+  labels:
+    app: app-tomcat
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app-tomcat
+        tier: tomcat
+    spec:
+      containers:
+      - image: tomcat:8.0.46
+        name: tomcat
+        ports:
+        - containerPort: 80
+          name: tomcat
+        volumeMounts:
+          - name: tomcat-config-persistent-storage
+            mountPath: /data
+          #- name: tomcat-www-persistent-storage
+          #  mountPath: /usr/share/nginx
+      volumes:
+        - name: tomcat-config-persistent-storage
+          persistentVolumeClaim:
+             claimName: tomcat-config-pv-claim
+        #- name: tomcat-www-persistent-storage
+        #  persistentVolumeClaim:
+        #     claimName: tomcat-www-pv-claim
+
