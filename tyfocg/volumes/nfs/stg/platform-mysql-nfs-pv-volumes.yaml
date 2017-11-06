@@ -9,5 +9,5 @@ spec:
     - ReadWriteMany
   nfs:
     # FIXME: use the right IP
-    server: 192.168.91.210
+    server: 192.168.20.131
     path: "/data/stg/mysql-57"
