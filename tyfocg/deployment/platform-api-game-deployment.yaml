@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-api-game-pv-claim
+  labels:
+    app: platform-api-game
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-api-game
+  labels:
+    app: platform-api-game
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-api-game
+        tier: api-game
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        command: [ "java","-jar","/data/api-game/api-game-1.0-SNAPSHOT.jar", "--spring.config.location=/data/api-game/application.yml" ]
+        name: platform-api-game
+        ports:
+        - containerPort: 8084
+          name: api-game
+        volumeMounts:
+            - name: platform-api-game-persistent-storage
+              mountPath: /data
+      volumes:
+        - name: platform-api-game-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-api-game-pv-claim

@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-api-pay-pv-claim
+  labels:
+    app: platform-api-pay
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-api-pay
+  labels:
+    app: platform-api-pay
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-api-pay
+        tier: api-pay
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        command: [ "java","-jar","/data/api-pay/api-pay-1.0-SNAPSHOT.jar", "--spring.config.location=/data/api-pay/application.yml" ]
+        name: platform-api-pay
+        ports:
+        - containerPort: 8083
+          name: api-pay
+        volumeMounts:
+            - name: platform-api-pay-persistent-storage
+              mountPath: /data
+      volumes:
+        - name: platform-api-pay-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-api-pay-pv-claim

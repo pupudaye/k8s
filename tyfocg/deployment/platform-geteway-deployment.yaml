@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-geteway-pv-claim
+  labels:
+    app: platform-geteway
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-geteway
+  labels:
+    app: platform-geteway
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-geteway
+        tier: geteway
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        command: [ "java","-jar","/data/geteway/geteway-1.0-SNAPSHOT.jar", "--spring.config.location=/data/geteway/application.yml" ]
+        name: platform-geteway
+        ports:
+        - containerPort: 8079
+          name: geteway
+        volumeMounts:
+            - name: platform-geteway-persistent-storage
+              mountPath: /data
+      volumes:
+        - name: platform-geteway-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-geteway-pv-claim

@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-service-log-pv-claim
+  labels:
+    app: platform-service-log
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-service-log
+  labels:
+    app: platform-service-log
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-service-log
+        tier: service-log
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        command: [ "java","-jar","/data/service-log/service-log-1.0-SNAPSHOT.jar", "--spring.config.location=/data/service-log/application.yml" ]
+        name: platform-service-log
+        ports:
+        - containerPort: 8095
+          name: service-log
+        volumeMounts:
+            - name: platform-service-log-persistent-storage
+              mountPath: /data
+      volumes:
+        - name: platform-service-log-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-service-log-pv-claim

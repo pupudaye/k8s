@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-api-user-pv-claim
+  labels:
+    app: platform-api-user
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-api-user
+  labels:
+    app: platform-api-user
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-api-user
+        tier: api-user
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        command: [ "java","-jar","/data/api-user/api-user-1.0-SNAPSHOT.jar", "--spring.config.location=/data/api-user/application.yml" ]
+        name: platform-api-user
+        ports:
+        - containerPort: 8082
+          name: api-user
+        volumeMounts:
+            - name: platform-api-user-persistent-storage
+              mountPath: /data
+      volumes:
+        - name: platform-api-user-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-api-user-pv-claim

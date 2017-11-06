@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-service-message-pv-claim
+  labels:
+    app: platform-service-message
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-service-message
+  labels:
+    app: platform-service-message
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-service-message
+        tier: service-message
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        command: [ "java","-jar","/data/service-message/service-message-1.0-SNAPSHOT.jar", "--spring.config.location=/data/service-message/application.yml" ]
+        name: platform-service-message
+        ports:
+        - containerPort: 8093
+          name: service-message
+        volumeMounts:
+            - name: platform-service-message-persistent-storage
+              mountPath: /data
+      volumes:
+        - name: platform-service-message-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-service-message-pv-claim

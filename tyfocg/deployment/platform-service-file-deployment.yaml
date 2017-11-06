@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-service-file-pv-claim
+  labels:
+    app: platform-service-file
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-service-file
+  labels:
+    app: platform-service-file
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-service-file
+        tier: service-file
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        command: [ "java","-jar","/data/service-file/service-file-1.0-SNAPSHOT.jar", "--spring.config.location=/data/service-file/application.yml" ]
+        name: platform-service-file
+        ports:
+        - containerPort: 8094
+          name: service-file
+        volumeMounts:
+            - name: platform-service-file-persistent-storage
+              mountPath: /data
+      volumes:
+        - name: platform-service-file-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-service-file-pv-claim
