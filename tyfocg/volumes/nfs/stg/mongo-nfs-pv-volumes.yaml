@@ -2,9 +2,12 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: nfs-pv-mongo-stg
+  labels:
+    name: pv-mongo-stg
+    environment: stg
 spec:
   capacity:
-    storage: 10Gi
+    storage: 50Gi
   accessModes:
     - ReadWriteMany
   nfs:

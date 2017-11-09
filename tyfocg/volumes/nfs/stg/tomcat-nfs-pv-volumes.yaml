@@ -2,6 +2,9 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: nfs-pv-tomcat-config-stg
+  labels:
+    name: pv-tomcat-config-stg
+    environment: stg
 spec:
   capacity:
     storage: 1Mi
@@ -16,6 +19,9 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: nfs-pv-tomcat-www-stg
+  labels:
+    name: pv-tomcat-www-stg
+    environment: stg
 spec:
   capacity:
     storage: 5Gi

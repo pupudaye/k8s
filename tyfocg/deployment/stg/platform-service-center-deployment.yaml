@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: platform-service-center-pv-claim
+  namespace: tyfocg-stg
   labels:
     app: platform-service-center
 spec:
@@ -10,11 +11,18 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-service-center-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
+
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: platform-service-center
+  namespace: tyfocg-stg
   labels:
     app: platform-service-center
 spec:
@@ -28,7 +36,6 @@ spec:
       containers:
       - image: pupudaye/centos-java
         command: [ "java","-jar","/data/service-center/service-center-1.0-SNAPSHOT.jar", "--spring.config.location=/data/service-center/application.yml" ]
-        #args: [ "redis.conf" ]
         name: platform-service-center
         ports:
         - containerPort: 8081

@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: redis-pv-claim
+  namespace: tyfocg-stg
   labels:
     app: platform-redis
 spec:
@@ -10,11 +11,17 @@ spec:
   resources:
     requests:
       storage: 5Gi
+  selector:
+    matchLabels:
+      name: "pv-redis-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: platform-redis
+  namespace: tyfocg-stg
   labels:
     app: platform-redis
 spec:

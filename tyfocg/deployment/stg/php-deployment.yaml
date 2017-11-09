@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: php-config-pv-claim
+  namespace: tyfocg-stg
   labels:
     app: php
 spec:
@@ -10,11 +11,17 @@ spec:
   resources:
     requests:
       storage: 1Mi
+  selector:
+    matchLabels:
+      name: "pv-php-config-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: php-www-pv-claim
+  namespace: tyfocg-stg
   labels:
     app: php
 spec:
@@ -23,11 +30,17 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-php-www-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: app-php
+  namespace: tyfocg-stg
   labels:
     app: app-php
 spec:

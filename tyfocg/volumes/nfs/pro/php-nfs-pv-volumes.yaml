@@ -1,27 +1,27 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfs-pv-nginx-config-stg
+  name: nfs-pv-php-config-pro
   labels:
-    name: pv-nginx-config-stg
-    environment: stg
+    name: pv-php-config-pro
+    environment: pro
 spec:
   capacity:
-    storage: 100Mi
+    storage: 1Mi
   accessModes:
     - ReadWriteMany
   nfs:
     # FIXME: use the right IP
     server: 192.168.20.131
-    path: "/data/stg/nginx"
+    path: "/data/pro/php"
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfs-pv-nginx-www-stg
+  name: nfs-pv-php-www-pro
   labels:
-    name: pv-nginx-www-stg
-    environment: stg
+    name: pv-php-www-pro
+    environment: pro
 spec:
   capacity:
     storage: 10Gi
@@ -30,4 +30,4 @@ spec:
   nfs:
     # FIXME: use the right IP
     server: 192.168.20.131
-    path: "/data/stg/nginx-www"
+    path: "/data/pro/nginx-www"

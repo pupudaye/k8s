@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfs-pv-platform-mysql-stg
+  name: nfs-pv-redis-pro
   labels:
-    name: pv-platform-mysql-stg
-    environment: stg
+    name: pv-redis-pro
+    environment: pro
 spec:
   capacity:
-    storage: 20Gi
+    storage: 5Gi
   accessModes:
     - ReadWriteMany
   nfs:
     # FIXME: use the right IP
     server: 192.168.20.131
-    path: "/data/stg/mysql-57"
+    path: "/data/pro/redis"

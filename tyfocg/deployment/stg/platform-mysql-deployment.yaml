@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: platform-mysql-pv-claim
+  namespace: tyfocg-stg
   labels:
     app: platform-mysql
 spec:
@@ -10,11 +11,17 @@ spec:
   resources:
     requests:
       storage: 20Gi
+  selector:
+    matchLabels:
+      name: "pv-platform-mysql-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: platform-mysql
+  namespace: tyfocg-stg
   labels:
     app: platform-mysql
 spec:
