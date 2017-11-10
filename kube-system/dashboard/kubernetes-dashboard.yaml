@@ -19,16 +19,16 @@
 
 # ------------------- Dashboard Secret ------------------- #
 
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    k8s-app: kubernetes-dashboard
-  name: kubernetes-dashboard-certs
-  namespace: kube-system
-type: Opaque
+#apiVersion: v1
+#kind: Secret
+#metadata:
+#  labels:
+#    k8s-app: kubernetes-dashboard
+#  name: kubernetes-dashboard-certs
+#  namespace: kube-system
+#type: Opaque
 
----
+#---
 # ------------------- Dashboard Service Account ------------------- #
 
 apiVersion: v1
@@ -65,14 +65,14 @@ rules:
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
   name: kubernetes-dashboard-minimal
   namespace: kube-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: kubernetes-dashboard-minimal
+  kind: ClusterRole
+  name: cluster-admin
 subjects:
 - kind: ServiceAccount
   name: kubernetes-dashboard
@@ -114,11 +114,12 @@ spec:
         args:
           - --tls-key-file=/certs/dashboard.key
           - --tls-cert-file=/certs/dashboard.crt
-          - --authentication-mode=basic
+          #- --authentication-mode=basic
           # Uncomment the following line to manually specify Kubernetes API server Host
           # If not specified, Dashboard will attempt to auto discover the API server and connect
           # to it. Uncomment only if the default does not work.
           # - --apiserver-host=http://my-address:port
+          #- --apiserver-host=https://192.168.20.131:6443
         volumeMounts:
         - name: kubernetes-dashboard-certs
           mountPath: /certs
@@ -144,20 +145,3 @@ spec:
       tolerations:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
-
----
-# ------------------- Dashboard Service ------------------- #
-
-kind: Service
-apiVersion: v1
-metadata:
-  labels:
-    k8s-app: kubernetes-dashboard
-  name: kubernetes-dashboard
-  namespace: kube-system
-spec:
-  ports:
-    - port: 443
-      targetPort: 8443
-  selector:
-    k8s-app: kubernetes-dashboard

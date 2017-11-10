@@ -4,14 +4,14 @@ metadata:
   name: nginx-weblogic-ingress
 spec:
   rules:
-  - host: local-m.tyfocg.com
+  - host: test-m.tyfocg.com
     http:
       paths:
       - path: /
         backend:
-          serviceName: app-nginx
-          servicePort: 80
-  - host: local-platform.tyfocg.com
+          serviceName: app-php
+          servicePort: 9000
+  - host: test-platform.tyfocg.com
     http:
       paths:
       - path: /
