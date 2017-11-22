@@ -14,3 +14,20 @@ spec:
     # FIXME: use the right IP
     server: 192.168.20.131
     path: "/data/stg/platform"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-service-file-data-stg
+  labels:
+    name: pv-service-file-data-stg
+    environment: stg
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    # FIXME: use the right IP
+    server: 192.168.20.131
+    path: "/data/stg/static-file/platform"

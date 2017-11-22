@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: platform-api-pay-pv-claim
+  namespace: tyfocg-stg
   labels:
     app: platform-api-pay
 spec:
@@ -10,11 +11,17 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-api-pay-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: platform-api-pay
+  namespace: tyfocg-stg
   labels:
     app: platform-api-pay
 spec:
@@ -27,15 +34,21 @@ spec:
     spec:
       containers:
       - image: pupudaye/centos-java
-        command: [ "java","-jar","/data/api-pay/api-pay-1.0-SNAPSHOT.jar", "--spring.config.location=/data/api-pay/application.yml" ]
+        #command: [ "java","-jar","/data/api-pay/api-pay-1.0-SNAPSHOT.jar", "--spring.config.location=/data/api-pay/application.yml" ]
+        command: [ "sh","/data/api-pay/run" ]
         name: platform-api-pay
         ports:
         - containerPort: 8083
           name: api-pay
         volumeMounts:
-            - name: platform-api-pay-persistent-storage
-              mountPath: /data
+          - name: platform-api-pay-persistent-storage
+            mountPath: /data
+          - name: localtime-config-volume
+            mountPath: /etc/localtime
       volumes:
         - name: platform-api-pay-persistent-storage
           persistentVolumeClaim:
              claimName: platform-api-pay-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

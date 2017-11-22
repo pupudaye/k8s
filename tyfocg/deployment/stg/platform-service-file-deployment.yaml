@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: platform-service-file-pv-claim
+  namespace: tyfocg-stg
   labels:
     app: platform-service-file
 spec:
@@ -10,11 +11,36 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-service-file-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-service-file-data-pv-claim
+  namespace: tyfocg-stg
+  labels:
+    app: platform-service-data-file
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-service-file-data-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: platform-service-file
+  namespace: tyfocg-stg
   labels:
     app: platform-service-file
 spec:
@@ -27,7 +53,8 @@ spec:
     spec:
       containers:
       - image: pupudaye/centos-java
-        command: [ "java","-jar","/data/service-file/service-file-1.0-SNAPSHOT.jar", "--spring.config.location=/data/service-file/application.yml" ]
+        #command: [ "java","-jar","/data/service-file/service-file-1.0-SNAPSHOT.jar", "--spring.config.location=/data/service-file/application.yml" ]
+        command: [ "sh","/data/service-file/run" ]
         name: platform-service-file
         ports:
         - containerPort: 8094
@@ -35,7 +62,17 @@ spec:
         volumeMounts:
             - name: platform-service-file-persistent-storage
               mountPath: /data
+            - name: platform-service-file-data-persistent-storage
+              mountPath: /app/imgs
+            - name: localtime-config-volume
+              mountPath: /etc/localtime
       volumes:
         - name: platform-service-file-persistent-storage
           persistentVolumeClaim:
              claimName: platform-service-file-pv-claim
+        - name: platform-service-file-data-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-service-file-data-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

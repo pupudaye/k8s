@@ -52,21 +52,26 @@ spec:
         tier: tomcat
     spec:
       containers:
-      - image: tomcat:8.0.46
+      - image: pupudaye/tomcat:8.0.47
         name: tomcat
         ports:
         - containerPort: 8080
           name: tomcat
         volumeMounts:
           - name: tomcat-config-persistent-storage
-            mountPath: /data
-          #- name: tomcat-www-persistent-storage
-          #  mountPath: /usr/share/nginx
+            mountPath: /usr/local/tomcat/conf
+          - name: tomcat-www-persistent-storage
+            mountPath: /usr/local/tomcat/webapps
+          - name: localtime-config-volume
+            mountPath: /etc/localtime
       volumes:
         - name: tomcat-config-persistent-storage
           persistentVolumeClaim:
              claimName: tomcat-config-pv-claim
-        #- name: tomcat-www-persistent-storage
-        #  persistentVolumeClaim:
-        #     claimName: tomcat-www-pv-claim
+        - name: tomcat-www-persistent-storage
+          persistentVolumeClaim:
+             claimName: tomcat-www-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime
 

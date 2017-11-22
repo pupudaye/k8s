@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: platform-service-log-pv-claim
+  namespace: tyfocg-stg
   labels:
     app: platform-service-log
 spec:
@@ -10,11 +11,18 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-service-log-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
+
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: platform-service-log
+  namespace: tyfocg-stg
   labels:
     app: platform-service-log
 spec:

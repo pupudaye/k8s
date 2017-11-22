@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: platform-api-game-pv-claim
+  namespace: tyfocg-stg
   labels:
     app: platform-api-game
 spec:
@@ -10,11 +11,17 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-api-game-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: platform-api-game
+  namespace: tyfocg-stg
   labels:
     app: platform-api-game
 spec:
@@ -27,7 +34,8 @@ spec:
     spec:
       containers:
       - image: pupudaye/centos-java
-        command: [ "java","-jar","/data/api-game/api-game-1.0-SNAPSHOT.jar", "--spring.config.location=/data/api-game/application.yml" ]
+        #command: [ "java","-jar","/data/api-game/api-game-1.0-SNAPSHOT.jar", "--spring.config.location=/data/api-game/application.yml" ]
+        command: [ "sh" ,"/data/api-game/run"]
         name: platform-api-game
         ports:
         - containerPort: 8084
@@ -35,7 +43,12 @@ spec:
         volumeMounts:
             - name: platform-api-game-persistent-storage
               mountPath: /data
+            - name: localtime-config-volume
+              mountPath: /etc/localtime
       volumes:
         - name: platform-api-game-persistent-storage
           persistentVolumeClaim:
              claimName: platform-api-game-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

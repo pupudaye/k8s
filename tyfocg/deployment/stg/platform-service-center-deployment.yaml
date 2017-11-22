@@ -35,7 +35,8 @@ spec:
     spec:
       containers:
       - image: pupudaye/centos-java
-        command: [ "java","-jar","/data/service-center/service-center-1.0-SNAPSHOT.jar", "--spring.config.location=/data/service-center/application.yml" ]
+        #command: [ "java","-jar","/data/service-center/service-center-1.0-SNAPSHOT.jar", "--spring.config.location=/data/service-center/application.yml" ]
+        command: [ "sh","/data/service-center/run" ]
         name: platform-service-center
         ports:
         - containerPort: 8081
@@ -43,7 +44,12 @@ spec:
         volumeMounts:
             - name: platform-service-center-persistent-storage
               mountPath: /data
+            - name: localtime-config-volume
+              mountPath: /etc/localtime
       volumes:
         - name: platform-service-center-persistent-storage
           persistentVolumeClaim:
              claimName: platform-service-center-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

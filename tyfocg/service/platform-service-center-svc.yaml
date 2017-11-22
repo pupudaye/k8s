@@ -10,5 +10,3 @@ spec:
   selector:
     app: platform-service-center
     tier: service-center
-  #type: NodePort
-#clusterIP: None

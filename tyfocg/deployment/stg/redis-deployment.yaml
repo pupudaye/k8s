@@ -43,7 +43,12 @@ spec:
         volumeMounts:
             - name: redis-persistent-storage
               mountPath: /data
+            - name: localtime-config-volume
+              mountPath: /etc/localtime
       volumes:
         - name: redis-persistent-storage
           persistentVolumeClaim:
              claimName: redis-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

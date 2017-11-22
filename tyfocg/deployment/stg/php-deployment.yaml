@@ -52,16 +52,20 @@ spec:
         tier: php
     spec:
       containers:
-      - image: php:5.6-fpm
+      #- image: php:5.6-fpm
+      - image: bitnami/php-fpm:5.6
+        #command: [ "sh","/bitnami/run" ]
         name: php
         ports:
         - containerPort: 9000
           name: php
         volumeMounts:
           - name: php-config-persistent-storage
-            mountPath: /usr/local/etc
+            mountPath: /bitnami
           - name: php-www-persistent-storage
             mountPath: /usr/share/nginx
+          - name: localtime-config-volume
+            mountPath: /etc/localtime
       volumes:
         - name: php-config-persistent-storage
           persistentVolumeClaim:
@@ -69,5 +73,7 @@ spec:
         - name: php-www-persistent-storage
           persistentVolumeClaim:
              claimName: php-www-pv-claim
-
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime
 
