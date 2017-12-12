@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-service-center-pv-claim
+  namespace: tyfocg-pro
+  labels:
+    app: platform-service-center
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-service-center-pro"
+    matchExpressions:
+      - {key: environment, operator: In, values: [pro]}
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-service-center
+  namespace: tyfocg-pro
+  labels:
+    app: platform-service-center
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-service-center
+        tier: service-center
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        #command: [ "java","-jar","/data/service-center/service-center-1.0-SNAPSHOT.jar", "--spring.config.location=/data/service-center/application.yml" ]
+        command: [ "sh","/data/service-center/run" ]
+        name: platform-service-center
+        ports:
+        - containerPort: 8081
+          name: service-center
+        volumeMounts:
+            - name: platform-service-center-persistent-storage
+              mountPath: /data
+            - name: localtime-config-volume
+              mountPath: /etc/localtime
+      volumes:
+        - name: platform-service-center-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-service-center-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

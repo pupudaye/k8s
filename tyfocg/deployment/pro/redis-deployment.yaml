@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pv-claim
+  namespace: tyfocg-pro
+  labels:
+    app: platform-redis
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  selector:
+    matchLabels:
+      name: "pv-redis-pro"
+    matchExpressions:
+      - {key: environment, operator: In, values: [pro]}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-redis
+  namespace: tyfocg-pro
+  labels:
+    app: platform-redis
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-redis
+        tier: redis
+    spec:
+      containers:
+      - image: redis:3.2.9
+        command: [ "redis-server" ]
+        args: [ "redis.conf" ]
+        name: redis
+        ports:
+        - containerPort: 6379
+          name: redis
+        volumeMounts:
+            - name: redis-persistent-storage
+              mountPath: /data
+            - name: localtime-config-volume
+              mountPath: /etc/localtime
+      volumes:
+        - name: redis-persistent-storage
+          persistentVolumeClaim:
+             claimName: redis-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

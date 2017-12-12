@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pv-claim
+  namespace: tyfocg-pro
+  labels:
+    app: platform-mongo
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  selector:
+    matchLabels:
+      name: "pv-mongo-pro"
+    matchExpressions:
+      - {key: environment, operator: In, values: [pro]}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-mongo
+  namespace: tyfocg-pro
+  labels:
+    app: platform-mongo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-mongo
+        tier: mongo
+    spec:
+      containers:
+      - image: mongo:3.4.5
+        command: [ "mongod","--config","/data/mongodb.conf" ]
+        name: mongo
+        ports:
+        - name: mongo
+          containerPort: 27017
+        volumeMounts:
+        - name: mongo-persistent-storage
+          mountPath: /data
+        - name: localtime-config-volume
+          mountPath: /etc/localtime
+      volumes:
+        - name: mongo-persistent-storage
+          persistentVolumeClaim:
+             claimName: mongo-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

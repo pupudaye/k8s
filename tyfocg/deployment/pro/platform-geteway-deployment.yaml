@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-geteway-pv-claim
+  namespace: tyfocg-pro
+  labels:
+    app: platform-geteway
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-geteway-pro"
+    matchExpressions:
+      - {key: environment, operator: In, values: [pro]}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-geteway
+  namespace: tyfocg-pro
+  labels:
+    app: platform-geteway
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-geteway
+        tier: geteway
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        #command: [ "java","-jar","/data/geteway/geteway-1.0-SNAPSHOT.jar", "--spring.config.location=/data/geteway/application.yml" ]
+        command: [ "sh","/data/geteway/run" ]
+        name: platform-geteway
+        ports:
+        - containerPort: 8079
+          name: geteway
+        volumeMounts:
+            - name: platform-geteway-persistent-storage
+              mountPath: /data
+            - name: localtime-config-volume
+              mountPath: /etc/localtime
+      volumes:
+        - name: platform-geteway-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-geteway-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

@@ -12,5 +12,22 @@ spec:
     - ReadWriteMany
   nfs:
     # FIXME: use the right IP
-    server: 192.168.20.131
+    server: 192.168.20.140
     path: "/data/pro/mysql-57"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-platform-mysql-config-pro
+  labels:
+    name: pv-platform-mysql-config-pro
+    environment: pro
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    # FIXME: use the right IP
+    server: 192.168.20.140
+    path: "/data/pro/mysql-57-config"

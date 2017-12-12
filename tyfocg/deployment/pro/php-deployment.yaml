@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: php-config-pv-claim
+  namespace: tyfocg-pro
+  labels:
+    app: php
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+  selector:
+    matchLabels:
+      name: "pv-php-config-pro"
+    matchExpressions:
+      - {key: environment, operator: In, values: [pro]}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: php-www-pv-claim
+  namespace: tyfocg-pro
+  labels:
+    app: php
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-php-www-pro"
+    matchExpressions:
+      - {key: environment, operator: In, values: [pro]}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: app-php
+  namespace: tyfocg-pro
+  labels:
+    app: app-php
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app-php
+        tier: php
+    spec:
+      containers:
+      - image: pupudaye/php-fpm:latest
+        #command: [ "sh","/bitnami/run" ]
+        name: php
+        ports:
+        - containerPort: 9000
+          name: php
+        volumeMounts:
+          - name: php-config-persistent-storage
+            mountPath: /bitnami
+          - name: php-www-persistent-storage
+            mountPath: /usr/share/nginx
+          - name: localtime-config-volume
+            mountPath: /etc/localtime
+      volumes:
+        - name: php-config-persistent-storage
+          persistentVolumeClaim:
+             claimName: php-config-pv-claim
+        - name: php-www-persistent-storage
+          persistentVolumeClaim:
+             claimName: php-www-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime
+

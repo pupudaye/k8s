@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-service-timer-pv-claim
+  namespace: tyfocg-pro
+  labels:
+    app: platform-service-timer
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-service-timer-pro"
+    matchExpressions:
+      - {key: environment, operator: In, values: [pro]}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-service-timer
+  namespace: tyfocg-pro
+  labels:
+    app: platform-service-timer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-service-timer
+        tier: service-timer
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        #command: [ "java","-jar","/data/service-timer/service-timer.war", "--spring.config.location=/data/service-timer/application.yml" ]
+        command: [ "sh","/data/service-timer/run" ]
+        name: platform-service-timer
+        ports:
+        - containerPort: 8096
+          name: service-timer
+        volumeMounts:
+            - name: platform-service-timer-persistent-storage
+              mountPath: /data
+            - name: localtime-config-volume
+              mountPath: /etc/localtime
+      volumes:
+        - name: platform-service-timer-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-service-timer-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

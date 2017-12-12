@@ -14,3 +14,20 @@ spec:
     # FIXME: use the right IP
     server: 192.168.20.131
     path: "/data/stg/mysql-57"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-platform-mysql-config-stg
+  labels:
+    name: pv-platform-mysql-config-stg
+    environment: stg
+spec:
+  capacity:
+    storage: 1Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    # FIXME: use the right IP
+    server: 192.168.20.131
+    path: "/data/stg/mysql-57-config"
