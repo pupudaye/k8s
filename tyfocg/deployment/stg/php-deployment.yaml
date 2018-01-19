@@ -52,8 +52,7 @@ spec:
         tier: php
     spec:
       containers:
-      #- image: php:5.6-fpm
-      - image: bitnami/php-fpm:5.6
+      - image: pupudaye/php-fpm:latest
         #command: [ "sh","/bitnami/run" ]
         name: php
         ports:

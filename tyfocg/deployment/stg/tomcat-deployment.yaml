@@ -53,6 +53,7 @@ spec:
     spec:
       containers:
       - image: pupudaye/tomcat:8.0.47
+        command: ["sh","/opt/install/apache-tomcat-8.0.47/conf/run.sh"]
         name: tomcat
         ports:
         - containerPort: 8080

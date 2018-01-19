@@ -12,7 +12,7 @@ spec:
     - ReadWriteMany
   nfs:
     # FIXME: use the right IP
-    server: 192.168.20.131
+    server: 192.168.20.140
     path: "/data/stg/mysql-57"
 ---
 apiVersion: v1
@@ -29,5 +29,5 @@ spec:
     - ReadWriteMany
   nfs:
     # FIXME: use the right IP
-    server: 192.168.20.131
+    server: 192.168.20.140
     path: "/data/stg/mysql-57-config"
