@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-api-nogameslot-pv-claim
+  namespace: tyfocg-stg
+  labels:
+    app: platform-api-nogameslot
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-api-nogameslot-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-api-nogameslot
+  namespace: tyfocg-stg
+  labels:
+    app: platform-api-nogameslot
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-api-nogameslot
+        tier: api-nogameslot
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        command: [ "sh" ,"/data/api-game-no-slot/run"]
+        name: platform-api-nogamesolt
+        ports:
+        - containerPort: 8084
+          name: api-nogameslot
+        volumeMounts:
+            - name: platform-api-nogameslot-persistent-storage
+              mountPath: /data
+            - name: localtime-config-volume
+              mountPath: /etc/localtime
+      volumes:
+        - name: platform-api-nogameslot-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-api-nogameslot-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime
