@@ -36,6 +36,25 @@ spec:
     matchExpressions:
       - {key: environment, operator: In, values: [stg]}
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-backup-data-pv-claim
+  namespace: tyfocg-stg
+  labels:
+    app: platform-backup-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+  selector:
+    matchLabels:
+      name: "pv-platform-backup-data-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -70,6 +89,8 @@ spec:
           mountPath: /var/lib/mysql
         - name: platform-mysql-config-persistent-storage
           mountPath: /etc/mysql
+        - name: platform-backup-data-persistent-storage
+          mountPath: /backup-data
         - name: localtime-config-volume
           mountPath: /etc/localtime
       volumes:
@@ -79,6 +100,9 @@ spec:
       - name: platform-mysql-config-persistent-storage
         persistentVolumeClaim:
           claimName: platform-mysql-config-pv-claim
+      - name: platform-backup-data-persistent-storage
+        persistentVolumeClaim:
+          claimName: platform-backup-data-pv-claim
       - name: localtime-config-volume
         hostPath:
           path: /etc/localtime

@@ -10,5 +10,5 @@ spec:
   selector:
     app: app-mysql
     tier: mysql
-  type: NodePort
-#clusterIP: None
+  #type: NodePort
+    #clusterIP: 10.103.196.189

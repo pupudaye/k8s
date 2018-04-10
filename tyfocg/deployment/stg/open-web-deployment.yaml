@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-open-web-pv-claim
+  namespace: tyfocg-stg
+  labels:
+    app: platform-open-web
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-open-web-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-open-web
+  namespace: tyfocg-stg
+  labels:
+    app: platform-open-web
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-open-web
+        tier: open-web
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        command: [ "sh","/data/open-web/run" ]
+        name: platform-open-web
+        ports:
+        - containerPort: 8080
+          name: open-web
+        volumeMounts:
+          - name: platform-open-web-persistent-storage
+            mountPath: /data
+          - name: localtime-config-volume
+            mountPath: /etc/localtime
+      volumes:
+        - name: platform-open-web-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-open-web-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime

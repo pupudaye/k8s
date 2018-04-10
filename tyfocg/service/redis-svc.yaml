@@ -10,5 +10,5 @@ spec:
   selector:
     app: platform-redis
     tier: redis
-  type: NodePort
+#  type: NodePort
 #  clusterIP: None

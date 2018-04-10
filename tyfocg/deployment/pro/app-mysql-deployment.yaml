@@ -17,6 +17,25 @@ spec:
     matchExpressions:
       - {key: environment, operator: In, values: [pro]}
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-backup-data-pv-claim
+  namespace: tyfocg-pro
+  labels:
+    app: app-backup-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-app-backup-data-pro"
+    matchExpressions:
+      - {key: environment, operator: In, values: [pro]}
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -49,12 +68,17 @@ spec:
         volumeMounts:
         - name: app-mysql-persistent-storage
           mountPath: /var/lib/mysql
+        - name: app-backup-data-persistent-storage
+          mountPath: /backup-data
         - name: localtime-config-volume
           mountPath: /etc/localtime
       volumes:
       - name: app-mysql-persistent-storage
         persistentVolumeClaim:
           claimName: app-mysql-pv-claim
+      - name: app-backup-data-persistent-storage
+        persistentVolumeClaim:
+          claimName: app-backup-data-pv-claim
       - name: localtime-config-volume
         hostPath:
           path: /etc/localtime

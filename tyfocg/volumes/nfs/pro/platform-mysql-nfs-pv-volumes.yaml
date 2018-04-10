@@ -31,3 +31,20 @@ spec:
     # FIXME: use the right IP
     server: 192.168.20.140
     path: "/data/pro/mysql-57-config"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-platform-backup-data-pro
+  labels:
+    name: pv-platform-backup-data-pro
+    environment: pro
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    # FIXME: use the right IP
+    server: 192.168.20.140
+    path: "/data/pro/backup-data"

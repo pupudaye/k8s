@@ -10,5 +10,5 @@ spec:
   selector:
     app: platform-mongo
     tier: mongo
-  type: NodePort
+#  type: NodePort
 #  clusterIP: None
