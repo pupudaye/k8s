@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: platform-redis
+  name: platform-redis-inte
   labels:
-    app: platform-redis
+    app: platform-redis-inte
 spec:
   ports:
     - port: 6379
   selector:
     app: platform-redis
     tier: redis
-#  type: NodePort
-  clusterIP: None
+  type: NodePort
+#  clusterIP: None

@@ -1,0 +1,9 @@
+#!/bin/bash
+if [ "$1" = "" ];then
+   echo "[error] 参数为空";
+else
+   kubectl delete -f /opt/k8s/tyfocg/volumes/nfs/$1/service-timer-nfs-pv-volumes.yaml
+   kubectl delete -f /opt/k8s/tyfocg/deployment/$1/platform-service-timer-deployment.yaml
+   kubectl create -f /opt/k8s/tyfocg/volumes/nfs/$1/service-timer-nfs-pv-volumes.yaml
+   kubectl create -f /opt/k8s/tyfocg/deployment/$1/platform-service-timer-deployment.yaml
+fi

@@ -1,12 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: platform-service-timer
+  name: platform-service-timer-inte
   labels:
-    app: platform-service-timer
+    app: platform-service-timer-inte
 spec:
   ports:
     - port: 8096
   selector:
     app: platform-service-timer
     tier: service-timer
+  type: NodePort

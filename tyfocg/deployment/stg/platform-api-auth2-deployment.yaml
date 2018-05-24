@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: platform-api-auth2-pv-claim
+  namespace: tyfocg-stg
+  labels:
+    app: platform-api-auth2
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: "pv-api-auth2-stg"
+    matchExpressions:
+      - {key: environment, operator: In, values: [stg]}
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: platform-api-auth2
+  namespace: tyfocg-stg
+  labels:
+    app: platform-api-auth2
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: platform-api-auth2
+        tier: api-auth2
+    spec:
+      containers:
+      - image: pupudaye/centos-java
+        command: [ "sh" ,"/data/api-auth2/run"]
+        name: platform-api-auth2
+        ports:
+        - containerPort: 8084
+          name: api-auth2
+        volumeMounts:
+            - name: platform-api-auth2-persistent-storage
+              mountPath: /data
+            - name: localtime-config-volume
+              mountPath: /etc/localtime
+      volumes:
+        - name: platform-api-auth2-persistent-storage
+          persistentVolumeClaim:
+             claimName: platform-api-auth2-pv-claim
+        - name: localtime-config-volume
+          hostPath:
+             path: /etc/localtime
